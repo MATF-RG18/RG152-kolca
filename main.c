@@ -1,18 +1,25 @@
 #include <stdio.h>
 #include <GL/glut.h>
 #include <stdlib.h>
-#include <math.h>
+#include <time.h>
+#include "prepreke.h"
+#include "model_autica.h"
 
-#define EPSILON 0.05
-#define PI 3.1415926535897
+#define TIMER_ID 1
+#define TIMER_INTERVAL 1
 
 /* promenljive za skretanje */
-const static float tr_x_delta = 0.05;
-static float tr_x;
+const float tr_x_delta = 0.05;
+float tr_x;
+int animation_ongoing;
 
-static void on_keyboard(unsigned char key, int x, int y);
-static void on_display(void);
-static void on_reshape(int width, int height);
+void on_keyboard(unsigned char key, int x, int y);
+void on_display(void);
+void on_reshape(int width, int height);
+void on_timer(int value);
+
+void mapa(void);
+void inicijalizacije(void);
 
 int main(int argc, char **argv)
 {
@@ -23,13 +30,12 @@ int main(int argc, char **argv)
     glutInitWindowPosition(100, 100);
     glutCreateWindow("kolca");
         
+    inicijalizacije();
     
     glutKeyboardFunc(on_keyboard);
     glutReshapeFunc(on_reshape);
     glutDisplayFunc(on_display);
-    
-    tr_x = 0;
-    
+
     glClearColor(0.7, 0.7, 0.99, 0);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_NORMALIZE);
@@ -39,34 +45,60 @@ int main(int argc, char **argv)
     return 0;
 }
 
-static void on_keyboard(unsigned char key, int x, int y)
+void inicijalizacije(void) {
+    tr_x = 0;
+    inicijalizacija_prepreka();
+    srand(time(NULL));
+    animation_ongoing = 0;
+}
+
+void on_keyboard(unsigned char key, int x, int y)
 {
     switch (key) {
         case 27:
             exit(0);
             break;
         /* skrecemo desno */
+        case 'g':
+        case 'G':
+            if (!animation_ongoing) {
+                animation_ongoing = 1;
+                glutTimerFunc(TIMER_INTERVAL, on_timer, TIMER_ID);
+            }
+            break;
+        case 's':
+        case 'S':
+            animation_ongoing = 0;
+            break;
         case 'd':
         case 'D':
             tr_x += tr_x_delta;
-            if (tr_x > 1.25) {
-                tr_x = 1.25;
-            }
-            glutPostRedisplay();
+            if (tr_x > 1.4)
+                tr_x = 1.4;
             break;
         /* skrecemo levo */
         case 'a':
         case 'A':
             tr_x -= tr_x_delta;
-            if (tr_x < -1.25) {
-                tr_x = -1.25;
-            }
-            glutPostRedisplay();
+            if (tr_x < -1.4)
+                tr_x = -1.4;
             break;
     }
 }
 
-static void on_reshape(int width, int height)
+void on_timer(int value) {
+    if (value != TIMER_ID)
+        return;
+    
+    azuriraj_prepreke();
+    glutPostRedisplay();
+
+    if (animation_ongoing)
+        glutTimerFunc(TIMER_INTERVAL, on_timer, TIMER_ID);
+}
+
+
+void on_reshape(int width, int height)
 {
     glViewport(0, 0, width, height);
     
@@ -75,145 +107,90 @@ static void on_reshape(int width, int height)
     gluPerspective(60, (float)width/height, 1, 300);
 }
 
-void set_normal_and_vertex_tire(float u, float v, float r)
-{
-    glNormal3f(0, r*cos(v), r*sin(v));
-    glVertex3f(u, r*cos(v), r*sin(v));
-}
- /* crtanje kruga */
-void draw_circle(float r)
-{
-    float v;
-    
-    glBegin(GL_TRIANGLE_FAN);
-    glColor3f(0.1, 0.1, 0.1);
-    glVertex3f(0, 0, 0);
-    for (v = 0; v <= 2*PI+EPSILON; v += PI/20) {
-        glNormal3f(1, 0, 0);
-        glVertex3f(0, r*cos(v), r*sin(v));
-    }
-    glEnd();
-}
-    
-/* crtanje tocka */
-void draw_tire(float r, float h)
-{
-    float u, v;
-    
-    for (u = -h/2; u < h/2; u += 0.01) {
-        glBegin(GL_TRIANGLE_STRIP);
-        glColor3f(0.1, 0.1, 0.1);
-        for (v = 0; v <= 2*PI+EPSILON; v += PI/20) {
-            set_normal_and_vertex_tire(u, v, r);
-            set_normal_and_vertex_tire(u + 0.01, v, r);
-        }
-        glEnd();
-    }
-    
-    glPushMatrix();
-        glTranslatef(h/2, 0, 0);
-        draw_circle(r);
-    glPopMatrix();
-    
-    glPushMatrix();
-        glTranslatef(-h/2, 0, 0);
-        draw_circle(r);
-    glPopMatrix();
-}
-
-/* crtanje kolca */
-void draw_car(void)
-{
-    /*hauba*/
-    glPushMatrix();
-        glColor3f(1, 0, 0);
-        glTranslatef(0, -0.125, -0.6);
-        glScalef(0.75, 0.25, 0.4);
-        glutSolidCube(1);
-    glPopMatrix();
-    
-    /*kabina*/
-    double clip_plane0[] = {0, -0.75, -1, 1/(2*sqrt(2))+0.05};
-    double clip_plane1[] = {0, -1, 1, 1/(2*sqrt(2))+0.05};
-    glClipPlane(GL_CLIP_PLANE0, clip_plane0);
-    glClipPlane(GL_CLIP_PLANE1, clip_plane1);
-    glEnable(GL_CLIP_PLANE0);
-    glEnable(GL_CLIP_PLANE1);
-    glPushMatrix();
-        glColor3f(0, 1, 0);
-        glScalef(0.75, 0.5, 0.8);
-        glutSolidCube(1);
-    glPopMatrix();
-    glDisable(GL_CLIP_PLANE0);
-    glDisable(GL_CLIP_PLANE1);
-    
-    /*gepek*/
-    glPushMatrix();
-        glColor3f(0, 0, 1);
-        glTranslatef(0, -0.125, 0.55);
-        glScalef(0.75, 0.25, 0.3);
-        glutSolidCube(1);
-    glPopMatrix();
-    
-    /*tockovi*/
-    glPushMatrix();
-        glTranslatef(0.351, -0.25, -0.6);
-        draw_tire(0.1, 0.05);
-    glPopMatrix();
-    
-    glPushMatrix();
-        glTranslatef(-0.351, -0.25, -0.6);
-        draw_tire(0.1, 0.05);
-    glPopMatrix();
-    
-    glPushMatrix();
-        glTranslatef(0.351, -0.25, 0.5);
-        draw_tire(0.1, 0.05);
-    glPopMatrix();
-    
-    glPushMatrix();
-        glTranslatef(-0.351, -0.25, 0.5);
-        draw_tire(0.1, 0.05);
-    glPopMatrix();
-}
 
 /* generisanje mape */
 void mapa(void)
 {
-    glColor3f(0.1, 0.1, 0.1);
+    glColor3f(0.25, 0.25, 0.25);
     glBegin(GL_POLYGON);
         glVertex3f(-2, 0, 5);
         glVertex3f(2, 0, 5);
-        glVertex3f(2, 0, -350);
-        glVertex3f(-2, 0, -350);
+        glVertex3f(2, 0, -75);
+        glVertex3f(-2, 0, -75);
     glEnd();
+
+    glColor3f(0.25, 0.7, 0.1);
+    glBegin(GL_POLYGON);
+        glVertex3f(-2, 0, 5);
+        glVertex3f(-2, 0, -75);
+        glVertex3f(-100, 0, -75);
+        glVertex3f(-100, 0, 5);
+    glEnd();
+
+    glColor3f(0.25, 0.7, 0.1);
+    glBegin(GL_POLYGON);
+        glVertex3f(2, 0, 5);
+        glVertex3f(2, 0, -75);
+        glVertex3f(100, 0, -75);
+        glVertex3f(100, 0, 5);
+    glEnd();    
+
+    nacrtaj_prepreke();
 }
 
-static void on_display(void)
+void dnevno_svetlo() {
+    /* Pozicija svetla (u pitanju je direkcionalno svetlo). */
+    GLfloat light_position[] = { 30, 30, -100, 0 };
+
+    /* Ambijentalna boja svetla. */
+    GLfloat light_ambient[] = { 0.1, 0.1, 0.1, 1 };
+
+    /* Difuzna boja svetla. */
+    GLfloat light_diffuse[] = { 0.2, 0.2, 0.2, 1 };
+
+    /* Spekularna boja svetla. */
+    GLfloat light_specular[] = { 0.5, 0.5, 0.5, 1 };
+
+    /* Koeficijenti ambijentalne refleksije materijala. */
+    GLfloat ambient_coeffs[] = { 0.3, 0.3, 0.3, 1 };
+
+    /* Koeficijenti difuzne refleksije materijala. */
+    GLfloat diffuse_coeffs[] = { 0.5, 0.5, 0.5, 1 };
+
+    /* Koeficijenti spekularne refleksije materijala. */
+    GLfloat specular_coeffs[] = { 1, 1, 1, 1 };
+
+    /* Koeficijent glatkosti materijala. */
+    GLfloat shininess = 20;
+
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+
+    /* Podesavaju se parametri materijala. */
+    glMaterialfv(GL_FRONT, GL_AMBIENT, ambient_coeffs);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse_coeffs);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, specular_coeffs);
+    glMaterialf(GL_FRONT, GL_SHININESS, shininess);
+}
+
+void on_display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
+    /*dnevno_svetlo();*/
+
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt(0, 3, 7, 0, 0, 0, 0, 1, 0);
     
-    /*
-    glBegin(GL_POLYGON);
-        glColor3f(0.5, 0.5, 0.5);
-        glVertex3f(2.5, -0.5, 7.5);
-        glVertex3f(-2.5, -0.5, 7.5);
-        glVertex3f(-2.5, -0.5, -250);
-        glVertex3f(2.5, -0.5, -250);
-    glEnd();
-    */
-    
     mapa();
     
     /* iscrtavamo kolca */
-    glPushMatrix();
-        glTranslatef(tr_x, 0.375, 2);
-        draw_car();
-    glPopMatrix();
-    
+    nacrtaj_kolca();
+
     glutSwapBuffers();
 }
