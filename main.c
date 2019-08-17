@@ -21,6 +21,9 @@ void on_timer(int value);
 void mapa(void);
 void inicijalizacije(void);
 
+/* kolizije */
+int provera_sudara() {}
+
 int main(int argc, char **argv)
 {
     glutInit(&argc, argv);
