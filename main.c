@@ -2,16 +2,21 @@
 #include <GL/glut.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 #include "prepreke.h"
 #include "model_autica.h"
+#include "kolizije.h"
 
 #define TIMER_ID 1
-#define TIMER_INTERVAL 1
+#define TIMER_INTERVAL 10
 
 /* promenljive za skretanje */
-const float tr_x_delta = 0.05;
+const float tr_x_delta = 0.075;
 float tr_x;
 int animation_ongoing;
+int helti;
+
+int window_width, window_height;
 
 void on_keyboard(unsigned char key, int x, int y);
 void on_display(void);
@@ -20,9 +25,6 @@ void on_timer(int value);
 
 void mapa(void);
 void inicijalizacije(void);
-
-/* kolizije */
-int provera_sudara() {}
 
 int main(int argc, char **argv)
 {
@@ -39,6 +41,7 @@ int main(int argc, char **argv)
     glutReshapeFunc(on_reshape);
     glutDisplayFunc(on_display);
 
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glClearColor(0.7, 0.7, 0.99, 0);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_NORMALIZE);
@@ -53,6 +56,8 @@ void inicijalizacije(void) {
     inicijalizacija_prepreka();
     srand(time(NULL));
     animation_ongoing = 0;
+    helti = 100;
+    sudar_u_toku = 0;
 }
 
 void on_keyboard(unsigned char key, int x, int y)
@@ -92,7 +97,8 @@ void on_keyboard(unsigned char key, int x, int y)
 void on_timer(int value) {
     if (value != TIMER_ID)
         return;
-    
+
+    provera_sudara();
     azuriraj_prepreke();
     glutPostRedisplay();
 
@@ -103,13 +109,15 @@ void on_timer(int value) {
 
 void on_reshape(int width, int height)
 {
+    window_width = width;
+    window_height = height;
+
     glViewport(0, 0, width, height);
-    
+
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(60, (float)width/height, 1, 300);
 }
-
 
 /* generisanje mape */
 void mapa(void)
@@ -190,6 +198,29 @@ void on_display(void)
     glLoadIdentity();
     gluLookAt(0, 3, 7, 0, 0, 0, 0, 1, 0);
     
+    if (helti <= 0) {
+        int i;
+        const char poruka[] = "GAME OVER";
+        glRasterPos3f(-1, 1, 1);
+        int len = strlen(poruka);
+        glColor3f(1, 1, 1);
+        for (i = 0; i < len; i++) {
+            glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, poruka[i]);
+        }
+    
+        animation_ongoing = 0;
+    } else {
+        int i;
+        char poruka[10];
+        sprintf(poruka, "helti: %d", helti);
+        glRasterPos3f(-3*window_width/700, 3.5*window_height/700, 1);
+        int len = strlen(poruka);
+        glColor3f(0.9, 0.4, 0.1);
+        for (i = 0; i < len; i++) {
+            glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, poruka[i]);
+        }
+    }
+
     mapa();
     
     /* iscrtavamo kolca */

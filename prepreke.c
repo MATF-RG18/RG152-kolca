@@ -1,7 +1,7 @@
 #include "prepreke.h"
 
 const float korak_prepreke = 5;
-const float brzina_prepreke = 0.05;
+const float brzina_prepreke = 0.075;
 Prepreka prepreke[MAX_PREPREKA];
 
 Rupa napravi_rupu() {
@@ -32,11 +32,11 @@ void inicijalizacija_prepreka() {
         if (rand() % 3) {
             prepreke[i].tip = RUPA;
             prepreke[i].info.rupa = napravi_rupu();
-            prepreke[i].info.rupa.z = -korak_prepreke * i;
+            prepreke[i].info.rupa.z = -korak_prepreke * i - 10;
         } else {
             prepreke[i].tip = RAMPA;
             prepreke[i].info.rampa = napravi_rampu();
-            prepreke[i].info.rampa.z = -korak_prepreke * i;
+            prepreke[i].info.rampa.z = -korak_prepreke * i - 10;
         }
     }
 }
@@ -57,12 +57,26 @@ void azuriraj_prepreke() {
 }
 
 void nacrtaj_rupu(Rupa r) {
+    /*
     glPushMatrix();
     glColor3f(0.6, 0.4, 0.1);
     glTranslatef(r.x, 0, r.z);
     glRotatef(90, 0, 0, 1);
     draw_circle(0.5);
     glPopMatrix();
+    */
+
+    GLUquadricObj *quadric_object = gluNewQuadric();
+    gluQuadricDrawStyle(quadric_object, GLU_FILL);
+    gluQuadricTexture(quadric_object, GL_TRUE);
+
+    glPushMatrix();
+    glColor3f(0.6, 0.4, 0.1);
+    glTranslatef(r.x, 0, r.z);
+    glRotatef(90, 1, 0, 0);
+    gluDisk(quadric_object, 0, 0.5, 25, 25);
+    glPopMatrix();
+
 }
 
 void nacrtaj_rampu(Rampa r) {
