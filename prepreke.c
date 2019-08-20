@@ -65,63 +65,95 @@ void nacrtaj_rupu(Rupa r) {
     draw_circle(0.5);
     glPopMatrix();
     */
-
+    
     GLUquadricObj *quadric_object = gluNewQuadric();
     gluQuadricDrawStyle(quadric_object, GLU_FILL);
     gluQuadricTexture(quadric_object, GL_TRUE);
 
     glPushMatrix();
+
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, names[RUPA_TEKSTURA]);
+
     glColor3f(0.6, 0.4, 0.1);
     glTranslatef(r.x, 0, r.z);
     glRotatef(90, 1, 0, 0);
     gluDisk(quadric_object, 0, 0.5, 25, 25);
     glPopMatrix();
 
+    glDisable(GL_TEXTURE_2D);
+
 }
 
 void nacrtaj_rampu(Rampa r) {
     if (r.velicina == 0.5) {
         glPushMatrix();
-        glColor3f(0.2, 0.2, 0.1);
+        glColor3f(0.1, 0.1, 0.1);
         glTranslatef(r.x-0.25, 0.15, r.z);
         glScalef(1, 3, 0.5);
         glutSolidCube(0.1);
         glPopMatrix();
 
         glPushMatrix();
-        glColor3f(0.2, 0.2, 0.1);
+        glColor3f(0.1, 0.1, 0.1);
         glTranslatef(r.x+0.25, 0.15, r.z);
         glScalef(1, 3, 0.5);
         glutSolidCube(0.1);
         glPopMatrix();
 
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, names[RAMPA_TEKSTURA]);
         glPushMatrix();
-        glColor3f(0.8, 0.2, 0.1);
+        glColor3f(0.5, 0.5, 0.1);
         glTranslatef(r.x, 0.4, r.z);
         glScalef(10, 2, 0.75);
+        glBegin(GL_POLYGON);
+            glTexCoord2f(0, 0);
+            glVertex3f(-0.05, -0.05, 0.05);
+            glTexCoord2f(1, 0);
+            glVertex3f(0.05, -0.05, 0.05);
+            glTexCoord2f(1, 1);
+            glVertex3f(0.05, 0.05, 0.05);
+            glTexCoord2f(0, 1);
+            glVertex3f(-0.05, 0.05, 0.05);
+        glEnd();
         glutSolidCube(0.1);
         glPopMatrix();
+        glDisable(GL_TEXTURE_2D);
     } else {
         glPushMatrix();
-        glColor3f(0.2, 0.2, 0.1);
+        glColor3f(0.1, 0.1, 0.1);
         glTranslatef(r.x-0.5, 0.15, r.z);
         glScalef(2, 3, 0.5);
         glutSolidCube(0.1);
         glPopMatrix();
 
         glPushMatrix();
-        glColor3f(0.2, 0.2, 0.1);
+        glColor3f(0.1, 0.1, 0.1);
         glTranslatef(r.x+0.5, 0.15, r.z);
         glScalef(2, 3, 0.5);
         glutSolidCube(0.1);
         glPopMatrix();
 
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, names[RAMPA_TEKSTURA]);
         glPushMatrix();
         glColor3f(0.8, 0.2, 0.1);
         glTranslatef(r.x, 0.4, r.z);
         glScalef(20, 2, 0.75);
+        glBegin(GL_POLYGON);
+            glTexCoord2f(0, 0);
+            glVertex3f(-0.05, -0.05, 0.05);
+            glTexCoord2f(1, 0);
+            glVertex3f(0.05, -0.05, 0.05);
+            glTexCoord2f(1, 1);
+            glVertex3f(0.05, 0.05, 0.05);
+            glTexCoord2f(0, 1);
+            glVertex3f(-0.05, 0.05, 0.05);
+        glEnd();
         glutSolidCube(0.1);
         glPopMatrix();
+        glDisable(GL_TEXTURE_2D);
     }
 }
 

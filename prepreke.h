@@ -3,6 +3,8 @@
 
 #include <GL/glut.h>
 #include <stdlib.h>
+#include <math.h>
+#include "tekstura.h"
 
 #define MAX_PREPREKA 15
 
@@ -30,6 +32,8 @@ typedef struct prepreka {
 Prepreka prepreke[MAX_PREPREKA];
 
 extern void draw_circle(float r);
+
+void nacrtaj_krug(float r);
 
 Rupa napravi_rupu();
 void nacrtaj_rupu();

@@ -24,8 +24,10 @@ void provera_sudara(void) {
                 float z_rampe = prepreke[i].info.rampa.z;
                 float x_rampe1 = prepreke[i].info.rampa.x - 0.5;
                 float x_rampe2 = prepreke[i].info.rampa.x + 0.5;
+                float x_rampe3 = prepreke[i].info.rampa.x;
                 float x_kolca = tr_x;
-                if ((x_rampe1 >= x_kolca-0.375 && x_rampe1 <= x_kolca+0.375 && z_rampe >= 3.2) || (x_rampe2 >= x_kolca-0.375 && x_rampe2 <= x_kolca+0.375 && z_rampe >= 3.2)) {
+                if ((x_rampe1 >= x_kolca-0.375 && x_rampe1 <= x_kolca+0.375 && z_rampe >= 3.2) || (x_rampe2 >= x_kolca-0.375 && x_rampe2 <= x_kolca+0.375 && z_rampe >= 3.2)
+                 || (x_rampe3 >= x_kolca-0.375 && x_rampe3 <= x_kolca+0.375 && z_rampe >= 3.2)) {
                     if (sudar_u_toku)
                         return;
                     else
