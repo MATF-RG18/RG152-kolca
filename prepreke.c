@@ -1,13 +1,14 @@
 #include "prepreke.h"
 
 const float korak_prepreke = 5;
-const float brzina_prepreke = 0.075;
+float brzina_prepreke = 0.075;
 Prepreka prepreke[MAX_PREPREKA];
 
 Rupa napravi_rupu() {
     Rupa tmp_rupa;
     tmp_rupa.x = -1.0 + rand() / (float)RAND_MAX * 2.0;
     tmp_rupa.z = 5 - korak_prepreke * MAX_PREPREKA; 
+    tmp_rupa.u = 0;
 
     return tmp_rupa;
 }
@@ -22,6 +23,8 @@ Rampa napravi_rampu() {
         tmp_rampa.x = -1.0 + rand() / (float)RAND_MAX * 2.0;
     }
     tmp_rampa.z = 5 - korak_prepreke * MAX_PREPREKA;
+    tmp_rampa.udarena = 0;
+    tmp_rampa.y = 0;
 
     return tmp_rampa;
 }
@@ -41,7 +44,21 @@ void inicijalizacija_prepreka() {
     }
 }
 
+void udarena_rupa(void) {
+    int i;
+    for (i = 0; i < MAX_PREPREKA; i++) {
+        if (prepreke[i].tip == RUPA) {
+            if (prepreke[i].info.rupa.u) {
+                brzina_prepreke = 0.055;
+                return;
+            }
+            brzina_prepreke = 0.075;
+        }
+    }
+}
+
 void azuriraj_prepreke() {
+    udarena_rupa();
     int i;
     for (i = 0; i < MAX_PREPREKA; i++) {
         if (prepreke[i].tip == RUPA) {
@@ -51,6 +68,14 @@ void azuriraj_prepreke() {
         } else if (prepreke[i].tip == RAMPA) {
             if (prepreke[i].info.rampa.z > 5)
                 prepreke[i].info.rampa = napravi_rampu();
+            else if (prepreke[i].info.rampa.udarena) {
+                if (prepreke[i].info.rampa.x <= 0) {
+                    prepreke[i].info.rampa.x -= 0.05;
+                } else {
+                    prepreke[i].info.rampa.x += 0.05;
+                }
+                prepreke[i].info.rampa.y += 0.1;
+            }
             prepreke[i].info.rampa.z += brzina_prepreke;
         }
     }
@@ -86,17 +111,21 @@ void nacrtaj_rupu(Rupa r) {
 }
 
 void nacrtaj_rampu(Rampa r) {
+    if (r.udarena) {
+        nacrtaj_udarenu_rampu(r);
+        return;
+    }
     if (r.velicina == 0.5) {
         glPushMatrix();
         glColor3f(0.1, 0.1, 0.1);
-        glTranslatef(r.x-0.25, 0.15, r.z);
+        glTranslatef(r.x-0.25, r.y + 0.15, r.z);
         glScalef(1, 3, 0.5);
         glutSolidCube(0.1);
         glPopMatrix();
 
         glPushMatrix();
         glColor3f(0.1, 0.1, 0.1);
-        glTranslatef(r.x+0.25, 0.15, r.z);
+        glTranslatef(r.x+0.25, r.y + 0.15, r.z);
         glScalef(1, 3, 0.5);
         glutSolidCube(0.1);
         glPopMatrix();
@@ -105,7 +134,7 @@ void nacrtaj_rampu(Rampa r) {
         glBindTexture(GL_TEXTURE_2D, names[RAMPA_TEKSTURA]);
         glPushMatrix();
         glColor3f(0.5, 0.5, 0.1);
-        glTranslatef(r.x, 0.4, r.z);
+        glTranslatef(r.x, r.y + 0.4, r.z);
         glScalef(10, 2, 0.75);
         glBegin(GL_POLYGON);
             glTexCoord2f(0, 0);
@@ -123,14 +152,14 @@ void nacrtaj_rampu(Rampa r) {
     } else {
         glPushMatrix();
         glColor3f(0.1, 0.1, 0.1);
-        glTranslatef(r.x-0.5, 0.15, r.z);
+        glTranslatef(r.x-0.5, r.y + 0.15, r.z);
         glScalef(2, 3, 0.5);
         glutSolidCube(0.1);
         glPopMatrix();
 
         glPushMatrix();
         glColor3f(0.1, 0.1, 0.1);
-        glTranslatef(r.x+0.5, 0.15, r.z);
+        glTranslatef(r.x+0.5, r.y + 0.15, r.z);
         glScalef(2, 3, 0.5);
         glutSolidCube(0.1);
         glPopMatrix();
@@ -139,7 +168,7 @@ void nacrtaj_rampu(Rampa r) {
         glBindTexture(GL_TEXTURE_2D, names[RAMPA_TEKSTURA]);
         glPushMatrix();
         glColor3f(0.8, 0.2, 0.1);
-        glTranslatef(r.x, 0.4, r.z);
+        glTranslatef(r.x, r.y + 0.4, r.z);
         glScalef(20, 2, 0.75);
         glBegin(GL_POLYGON);
             glTexCoord2f(0, 0);
@@ -155,6 +184,19 @@ void nacrtaj_rampu(Rampa r) {
         glPopMatrix();
         glDisable(GL_TEXTURE_2D);
     }
+}
+
+void nacrtaj_udarenu_rampu(Rampa r) {
+    glPushMatrix();
+    if (r.x <= 0)
+        glRotatef(r.y*10, 0, 0, 1);    
+    else
+        glRotatef(-r.y*10, 0, 0, 1);
+    glTranslatef(0, r.y, 0);
+    r.udarena = 0;
+    nacrtaj_rampu(r);
+    r.udarena = 1;
+    glPopMatrix();
 }
 
 void nacrtaj_prepreke() {

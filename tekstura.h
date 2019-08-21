@@ -7,18 +7,16 @@
 #define PUT_FILE "teksture/put.bmp"
 #define RUPA_FILE "teksture/sahta.bmp"
 #define RAMPA_FILE "teksture/rampa.bmp"
-#define TRAVA_FILE "teksture/trava7.bmp"
-#define PLANINA_FILE "teksture/planina3.bmp"
+#define TRAVA_FILE "teksture/trava.bmp"
 #define NEBO_FILE "teksture/nebo.bmp"
 
 #define PUT_TEKSTURA 0
 #define RUPA_TEKSTURA 1
 #define RAMPA_TEKSTURA 2
 #define TRAVA_TEKSTURA 3
-#define PLANINA_TEKSTURA 4
-#define NEBO_TEKSTURA 5
+#define NEBO_TEKSTURA 4
 
-GLuint names[6];
+GLuint names[5];
 void inicijalizacija_teksture(void);
 
 #endif

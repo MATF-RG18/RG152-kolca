@@ -1,4 +1,5 @@
 #include "model_autica.h"
+#include "svetlo.h"
 
 extern float tr_x;
 
@@ -21,7 +22,7 @@ void draw_circle(float r)
     }
     glEnd();
 }
-    
+
 /* crtanje tocka */
 void draw_tire(float r, float h)
 {
@@ -53,9 +54,29 @@ void draw_tire(float r, float h)
 /* crtanje kolca */
 void draw_car(void)
 {
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+
+    /* Koeficijenti ambijentalne refleksije materijala. */
+    GLfloat ambient_coeffs[] = { 0.3, 0.3, 0.9, 1 };
+
+    /* Koeficijenti difuzne refleksije materijala. */
+    GLfloat diffuse_coeffs[] = { 0.2, 0.2, 0.6, 1 };
+
+    /* Koeficijenti spekularne refleksije materijala. */
+    GLfloat specular_coeffs[] = { 0.1, 0.1, 0.3, 1 };
+
+    /* Koeficijent glatkosti materijala. */
+    GLfloat shininess = 20;
+    /* Podesavaju se parametri materijala. */
+    glMaterialfv(GL_FRONT, GL_AMBIENT, ambient_coeffs);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse_coeffs);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, specular_coeffs);
+    glMaterialf(GL_FRONT, GL_SHININESS, shininess);
+
     /*hauba*/
     glPushMatrix();
-        glColor3f(0.85, 0.05, 0.05);
+        glColor3f(0.1, 0.1, 0.3);
         glTranslatef(0, -0.125, -0.6);
         glScalef(0.75, 0.25, 0.4);
         glutSolidCube(1);
@@ -69,7 +90,7 @@ void draw_car(void)
     glEnable(GL_CLIP_PLANE0);
     glEnable(GL_CLIP_PLANE1);
     glPushMatrix();
-        glColor3f(0.85, 0.05, 0.05);
+        glColor3f(0.1, 0.1, 0.3);
         glScalef(0.75, 0.5, 0.8);
         glutSolidCube(1);
     glPopMatrix();
@@ -78,12 +99,97 @@ void draw_car(void)
     
     /*gepek*/
     glPushMatrix();
-        glColor3f(0.85, 0.05, 0.05);
+        glColor3f(0.1, 0.1, 0.3);
         glTranslatef(0, -0.125, 0.55);
         glScalef(0.75, 0.25, 0.3);
         glutSolidCube(1);
     glPopMatrix();
+    glDisable(GL_LIGHT0);
+    glDisable(GL_LIGHTING);
+
+    /* svetla */
+    glBegin(GL_POLYGON);
+    glColor3f(0.8, 0.2, 0.2);
+        glVertex3f(-0.35, -0.05, 0.75);
+        glVertex3f(-0.2, -0.05, 0.75);
+        glVertex3f(-0.2, 0.0, 0.75);
+        glVertex3f(-0.35, 0.0, 0.75);
+    glEnd();
+
+    glBegin(GL_POLYGON);
+    glColor3f(0.8, 0.2, 0.2);
+        glVertex3f(0.35, -0.05, 0.75);
+        glVertex3f(0.2, -0.05, 0.75);
+        glVertex3f(0.2, 0.0, 0.75);
+        glVertex3f(0.35, 0.0, 0.75);
+    glEnd();
     
+    /* tablice */
+    glBegin(GL_POLYGON);
+    glColor3f(0.8, 0.8, 0.8);
+        glVertex3f(-0.15, -0.1, 0.75);
+        glVertex3f(0.15, -0.1, 0.75);
+        glVertex3f(0.15, -0.05, 0.75);
+        glVertex3f(-0.15, -0.05, 0.75);
+    glEnd();
+
+    /* prozori */
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT1);
+
+    /* Koeficijenti ambijentalne refleksije materijala. */
+    GLfloat ambient_coeffs2[] = { 0.7, 0.7, 0.9, 1 };
+
+    /* Koeficijenti difuzne refleksije materijala. */
+    GLfloat diffuse_coeffs2[] = { 0.5, 0.5, 0.6, 1 };
+
+    /* Koeficijenti spekularne refleksije materijala. */
+    GLfloat specular_coeffs2[] = { 0.2, 0.2, 0.3, 1 };
+
+    /* Koeficijent glatkosti materijala. */
+    GLfloat shininess2 = 20;
+
+    /* Podesavaju se parametri materijala. */
+    glMaterialfv(GL_FRONT, GL_AMBIENT, ambient_coeffs2);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse_coeffs2);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, specular_coeffs2);
+    glMaterialf(GL_FRONT, GL_SHININESS, shininess2);
+
+    glBegin(GL_POLYGON);
+    glColor3f(0.8, 0.8, 0.8);
+        glVertex3f(-0.35, 0.05, 0.4);
+        glVertex3f(0.35, 0.05, 0.4);
+        glVertex3f(0.35, 0.25, 0.25);
+        glVertex3f(-0.35, 0.25, 0.25);
+    glEnd();
+
+    glBegin(GL_POLYGON);
+    glColor3f(0.8, 0.8, 0.8);
+        glVertex3f(-0.376, 0.05, -0.2);
+        glVertex3f(-0.376, 0.05, +0.35);
+        glVertex3f(-0.376, 0.25, +0.2);
+        glVertex3f(-0.376, 0.25, -0.1);
+    glEnd();
+
+    glBegin(GL_POLYGON);
+    glColor3f(0.8, 0.8, 0.8);
+        glVertex3f(0.376, 0.05, -0.2);
+        glVertex3f(0.376, 0.05, +0.35);
+        glVertex3f(0.376, 0.25, +0.2);
+        glVertex3f(0.376, 0.25, -0.1);
+    glEnd();
+
+    glBegin(GL_POLYGON);
+    glColor3f(0.8, 0.8, 0.8);
+        glVertex3f(-0.35, 0.05, 0.4);
+        glVertex3f(0.35, 0.05, 0.4);
+        glVertex3f(0.35, 0.25, 0.25);
+        glVertex3f(-0.35, 0.25, 0.25);
+    glEnd();
+
+    glDisable(GL_LIGHTING);
+    glDisable(GL_LIGHT1);
+
     /*tockovi*/
     glPushMatrix();
         glTranslatef(0.351, -0.25, -0.6);

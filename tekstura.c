@@ -17,7 +17,7 @@ void inicijalizacija_teksture(void) {
     image = image_init(0, 0);
 
     /* Generisu se identifikatori tekstura. */
-    glGenTextures(6, names);
+    glGenTextures(5, names);
 
     /* Kreira se tekstura za put. */
     image_read(image, PUT_FILE);
@@ -84,7 +84,7 @@ void inicijalizacija_teksture(void) {
                  image->width, image->height, 0,
                  GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
 
-    /* Kreira se tekstura za planina. */
+    /* Kreira se tekstura za planinu. *//*
     image_read(image, PLANINA_FILE);
 
     glBindTexture(GL_TEXTURE_2D, names[PLANINA_TEKSTURA]);
@@ -99,7 +99,7 @@ void inicijalizacija_teksture(void) {
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
                  image->width, image->height, 0,
                  GL_RGB, GL_UNSIGNED_BYTE, image->pixels);    
-
+*/
     /* Kreira se tekstura za nebo. */
     image_read(image, NEBO_FILE);
 

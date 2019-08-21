@@ -11,10 +11,14 @@ void provera_sudara(void) {
                 float x_kolca = tr_x;
                 float z_kolca = 4;
                 if (x_rupe >= x_kolca-0.375 && x_rupe <= x_kolca+0.375 && z_rupe >= z_kolca-0.7 && z_rupe <= z_kolca+0.5) {
-                    if (sudar_u_toku)
+                    if (sudar_u_toku) {
+                        prepreke[i].info.rupa.u = 1;
                         return;
-                    else
+                    }
+                    else {
                         helti -= 5;
+                        prepreke[i].info.rupa.u = 0;
+                    }
                     sudar_u_toku = 1;
                     return;
                 }
@@ -33,6 +37,7 @@ void provera_sudara(void) {
                     else
                         helti -= 10;
                     sudar_u_toku = 1;
+                    prepreke[i].info.rampa.udarena = 1;
                     return;
                 }
             } else {
@@ -49,6 +54,7 @@ void provera_sudara(void) {
                     else
                         helti -= 10;
                     sudar_u_toku = 1;
+                    prepreke[i].info.rampa.udarena = 1;
                     return;
                  }
             }
