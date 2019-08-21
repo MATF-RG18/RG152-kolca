@@ -10,24 +10,25 @@
 #include "tekstura.h"
 #include "image.h"
 #include "svetlo.h"
+#include "mapa.h"
 
 #define TIMER_ID 1
 #define TIMER_INTERVAL 10
 
 /* promenljive za skretanje */
-const float tr_x_delta = 0.075;
-float tr_x;
-int animation_ongoing;
+const float tr_x_delta = 0.075; /* konstanta za promenu x parametra kolca */
+float tr_x; /* trenutna vrednost x parametra kolca */
+int animation_ongoing; /* parametar aktivnosti igrice */
 
 int window_width, window_height;
 
+/* funkcije */
 void on_keyboard(unsigned char key, int x, int y);
 void on_display(void);
 void on_reshape(int width, int height);
 void on_timer(int value);
 
-void mapa(void);
-void inicijalizacije(void);
+void inicijalizacije(void); /* inicijalizuje pocetne vrednosti igrice */
 
 int main(int argc, char **argv)
 {
@@ -72,7 +73,7 @@ void on_keyboard(unsigned char key, int x, int y)
         case 27:
             exit(0);
             break;
-        /* skrecemo desno */
+        /* pokrecemo igricu */
         case 'g':
         case 'G':
             if (!animation_ongoing) {
@@ -80,10 +81,12 @@ void on_keyboard(unsigned char key, int x, int y)
                 glutTimerFunc(TIMER_INTERVAL, on_timer, TIMER_ID);
             }
             break;
+        /* stopiramo igricu */
         case 's':
         case 'S':
             animation_ongoing = 0;
             break;
+        /* skrecemo desno */
         case 'd':
         case 'D':
             tr_x += tr_x_delta;
@@ -97,6 +100,7 @@ void on_keyboard(unsigned char key, int x, int y)
             if (tr_x < -1.4)
                 tr_x = -1.4;
             break;
+        /* restartujemo igricu */
         case 'r':
         case 'R':
             inicijalizacije();
@@ -108,7 +112,7 @@ void on_timer(int value) {
     if (value != TIMER_ID)
         return;
 
-    poeni += 0.015;
+    poeni += 0.015; /* povecavamo broj poena */
     provera_sudara();
     azuriraj_prepreke();
     glutPostRedisplay();
@@ -130,119 +134,6 @@ void on_reshape(int width, int height)
     gluPerspective(60, (float)width/height, 1, 300);
 }
 
-/* generisanje mape */
-void mapa(void)
-{
-    /* put */
-    /*glColor3f(0.25, 0.25, 0.25);*/
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, names[PUT_TEKSTURA]);
-    glBegin(GL_POLYGON);
-        glNormal3f(0, 0, 1);
-
-        glTexCoord2f(0, 0);
-        glVertex3f(-2, 0, 5);
-
-        glTexCoord2f(1, 0);
-        glVertex3f(2, 0, 5);
-
-        glTexCoord2f(1, 1);
-        glVertex3f(2, 0, -75);
-
-        glTexCoord2f(0, 1);
-        glVertex3f(-2, 0, -75);
-    glEnd();
-    glDisable(GL_TEXTURE_2D);
-
-    /* leva trava */
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, names[TRAVA_TEKSTURA]);
-    glBegin(GL_POLYGON);
-        glNormal3f(0, 1, 0);
-
-        glTexCoord2f(0, 0);
-        glVertex3f(-100, 0, 5);
-
-        glTexCoord2f(10, 0);
-        glVertex3f(-2, 0, 5);
-
-        glTexCoord2f(10, 10);
-        glVertex3f(-2, 0, -75);
-
-        glTexCoord2f(0, 10);
-        glVertex3f(-100, 0, -75);
-    glEnd();
-    glDisable(GL_TEXTURE_2D);
-
-    /* desna trava */
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, names[TRAVA_TEKSTURA]);
-    glBegin(GL_POLYGON);
-        glNormal3f(0, 1, 0);
-
-        glTexCoord2f(0, 0);
-        glVertex3f(2, 0, 5);
-
-        glTexCoord2f(10, 0);
-        glVertex3f(100, 0, 5);
-
-        glTexCoord2f(10, 10);
-        glVertex3f(100, 0, -75);
-
-        glTexCoord2f(0, 10);
-        glVertex3f(2, 0, -75);
-    glEnd();    
-    glDisable(GL_TEXTURE_2D);
-
-    /* desna planina *//*
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, names[PLANINA_TEKSTURA]);
-    glColor3f(0, 0, 0);
-    glBegin(GL_TRIANGLE_FAN);
-        glTexCoord2f(0, 0);
-        glVertex3f(-10, 0, -75);
-        glTexCoord2f(0, 20);
-        glVertex3f(50, 0, -75);
-        glTexCoord2f(20, 10);
-        glVertex3f(20, 10, -75);
-    glEnd();
-    glDisable(GL_TEXTURE_2D);*/
-
-    /* leva planina *//*
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, names[PLANINA_TEKSTURA]);
-    glColor3f(0, 0, 0);
-    glBegin(GL_TRIANGLE_FAN);
-        glVertex3f(-50, 0, -75);
-        glVertex3f(10, 0, -75);
-        glVertex3f(-20, 10, -75);
-    glEnd();
-    glDisable(GL_TEXTURE_2D);
-*/
-
-    /* nebo *//*
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, names[PLANINA_TEKSTURA]);*/
-    glBegin(GL_POLYGON);
-    glColor3f(0.6, 0.6, 0.9);
-        glTexCoord2f(0, 0);
-        glVertex3f(-100, 0, -75);
-
-        glTexCoord2f(6, 0);
-        glVertex3f(100, 0, -75);
-        
-        glTexCoord2f(6, 6);
-        glVertex3f(100, 100, -75);
-        
-        glTexCoord2f(0, 6);
-        glVertex3f(-100, 100, -75);
-       /* 
-    glDisable(GL_TEXTURE_2D);*/
-    glEnd();
-
-    nacrtaj_prepreke();
-}
-
 void on_display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -251,12 +142,11 @@ void on_display(void)
     glLoadIdentity();
     gluLookAt(0, 3, 7, 0, 0, 0, 0, 1, 0);
     
-    mapa();
+    nacrtaj_mapu();
 
     ispis_helti();
     ispis_poeni();
     
-    /* iscrtavamo kolca */
     nacrtaj_kolca();
 
     glutSwapBuffers();

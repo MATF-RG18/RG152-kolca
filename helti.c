@@ -1,5 +1,6 @@
 #include "helti.h"
 
+/* ispisujemo helte u toku igre i po zavrsetnu igre ispisuje "GAME OVER" */
 void ispis_helti(void) {
     if (helti <= 0) {
         int i;
@@ -25,6 +26,7 @@ void ispis_helti(void) {
     }
 }
 
+/* ispisuje trenutne poene i poene po zavrsetku igre */
 void ispis_poeni(void) {
     if (helti > 0) {
         int i;

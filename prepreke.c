@@ -1,9 +1,10 @@
 #include "prepreke.h"
 
-const float korak_prepreke = 5;
-float brzina_prepreke = 0.075;
-Prepreka prepreke[MAX_PREPREKA];
+const float korak_prepreke = 5; /* razmak izmedju prepreka */
+float brzina_prepreke = 0.075; /* brzina kretanja prepreka */
+Prepreka prepreke[MAX_PREPREKA]; /* niz prepreka */
 
+/* fja pravi rupu i inicijalizuje pocetne vrednosti */
 Rupa napravi_rupu() {
     Rupa tmp_rupa;
     tmp_rupa.x = -1.0 + rand() / (float)RAND_MAX * 2.0;
@@ -13,6 +14,7 @@ Rupa napravi_rupu() {
     return tmp_rupa;
 }
 
+/* pravi rampu i inicijalizuje pocetne vrednosti */
 Rampa napravi_rampu() {
     Rampa tmp_rampa;
     if (rand() % 3) {
@@ -29,6 +31,7 @@ Rampa napravi_rampu() {
     return tmp_rampa;
 }
 
+/* inicijalizuje niz prepreka */
 void inicijalizacija_prepreka() {
     int i;
     for(i = 0; i < MAX_PREPREKA; i++) {
@@ -44,6 +47,7 @@ void inicijalizacija_prepreka() {
     }
 }
 
+/* proverava da li je udareno u rupu i ako jeste smanjuje brzinu prepreke */
 void udarena_rupa(void) {
     int i;
     for (i = 0; i < MAX_PREPREKA; i++) {
@@ -57,6 +61,7 @@ void udarena_rupa(void) {
     }
 }
 
+/* azurira kretanje prepreka*/
 void azuriraj_prepreke() {
     udarena_rupa();
     int i;
@@ -81,16 +86,8 @@ void azuriraj_prepreke() {
     }
 }
 
-void nacrtaj_rupu(Rupa r) {
-    /*
-    glPushMatrix();
-    glColor3f(0.6, 0.4, 0.1);
-    glTranslatef(r.x, 0, r.z);
-    glRotatef(90, 0, 0, 1);
-    draw_circle(0.5);
-    glPopMatrix();
-    */
-    
+/* fja crta rupu */
+void nacrtaj_rupu(Rupa r) {    
     GLUquadricObj *quadric_object = gluNewQuadric();
     gluQuadricDrawStyle(quadric_object, GLU_FILL);
     gluQuadricTexture(quadric_object, GL_TRUE);
@@ -110,12 +107,13 @@ void nacrtaj_rupu(Rupa r) {
 
 }
 
+/* fja crta rampu */
 void nacrtaj_rampu(Rampa r) {
     if (r.udarena) {
         nacrtaj_udarenu_rampu(r);
         return;
     }
-    if (r.velicina == 0.5) {
+    if (r.velicina == 0.5) { /* crtanje manje rampe */
         glPushMatrix();
         glColor3f(0.1, 0.1, 0.1);
         glTranslatef(r.x-0.25, r.y + 0.15, r.z);
@@ -149,7 +147,7 @@ void nacrtaj_rampu(Rampa r) {
         glutSolidCube(0.1);
         glPopMatrix();
         glDisable(GL_TEXTURE_2D);
-    } else {
+    } else { /* crtanje vece rampe */
         glPushMatrix();
         glColor3f(0.1, 0.1, 0.1);
         glTranslatef(r.x-0.5, r.y + 0.15, r.z);
@@ -186,6 +184,7 @@ void nacrtaj_rampu(Rampa r) {
     }
 }
 
+/* fja crta rampu kada je udareno u nju, rotira i translira udarenu rampu */
 void nacrtaj_udarenu_rampu(Rampa r) {
     glPushMatrix();
     if (r.x <= 0)
@@ -199,6 +198,7 @@ void nacrtaj_udarenu_rampu(Rampa r) {
     glPopMatrix();
 }
 
+/* fja iscrtava sve prepreke */
 void nacrtaj_prepreke() {
     int i;
     for (i = 0; i < MAX_PREPREKA; i++) {

@@ -1,5 +1,6 @@
 #include "svetlo.h"
 
+/* inicijalizujemo sva svetla koja imamo */
 void inicijalizacija_svetla(void) {
     /* svetlo za kolca */
     /* Pozicija svetla (u pitanju je direkcionalno svetlo). */

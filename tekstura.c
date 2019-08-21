@@ -1,5 +1,7 @@
 #include "tekstura.h"
 
+/* ovde ukljucujemo sve potrebne teksture */
+
 void inicijalizacija_teksture(void) {
     Image * image;
 
